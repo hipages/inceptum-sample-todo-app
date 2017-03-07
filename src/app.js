@@ -1,8 +1,14 @@
 const SwaggerExpress = require('swagger-express-mw');
 const app = require('express')();
-const { WebContext } = require('inceptum');
+const { WebContext, LogManager } = require('inceptum');
 const co = require('co');
 const path = require('path');
+
+LogManager.setAppName('swagger-example');
+const log = LogManager.getLogger(__filename);
+
+log.info({ content: 'fine' }, 'This is a message');
+log.debug({ content: 'wrong' }, 'This is a debug message');
 
 const config = {
   appRoot: __dirname, // required config

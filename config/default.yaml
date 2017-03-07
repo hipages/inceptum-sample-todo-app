@@ -52,6 +52,26 @@ MySQL:
       charset: utf8
       connectionLimit: 10
 
+Logging:
+  streams:
+    console:
+      type: console
+    myredis:
+      type: redis
+    mainLogFile:
+      type: file
+      path: main.log
+  loggers:
+    - name: ROOT
+      streams:
+        console: info
+        myredis: debug
+        mainLogFile: debug
+    - name: ioc/
+      streams:
+        console: info
+        myredis: info
+
 application:
   salutation: Hello, man!
 
