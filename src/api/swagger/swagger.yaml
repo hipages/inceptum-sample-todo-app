@@ -18,6 +18,20 @@ consumes:
 produces:
   - application/json
 paths:
+  /hi:
+    x-swagger-router-controller: SayHiController
+    get:
+      operationId: sayHi()
+      description: A well behaved controller
+      responses:
+        "200":
+          description: Saying hi
+          schema:
+            $ref: "#/definitions/SimpleMessage"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /todo:
     # binds a127 app logic to a route
     x-swagger-router-controller: TodoController
