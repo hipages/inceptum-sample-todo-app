@@ -65,12 +65,12 @@ Logging:
     - name: ROOT
       streams:
         console: info
-        myredis: debug
-        mainLogFile: debug
+#        myredis: debug
+        mainLogFile: error
     - name: ioc/
       streams:
-        console: info
-        myredis: info
+        console: debug
+#        myredis: info
 
 application:
   salutation: Hello, man!
