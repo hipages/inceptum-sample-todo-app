@@ -1,6 +1,6 @@
 const SwaggerExpress = require('swagger-express-mw');
 const app = require('express')();
-const { WebContext, LogManager } = require('inceptum');
+const { BaseContext, LogManager } = require('inceptum');
 const co = require('co');
 const path = require('path');
 
@@ -14,8 +14,8 @@ const config = {
   appRoot: __dirname, // required config
 };
 
-WebContext.registerSingletonsInDir(path.join(config.appRoot, 'api/controllers/'));
-WebContext.registerSingletonsInDir(path.join(config.appRoot, 'service/'));
+BaseContext.registerSingletonsInDir(path.join(config.appRoot, 'api/controllers/'));
+BaseContext.registerSingletonsInDir(path.join(config.appRoot, 'service/'));
 
 let server = null;
 
@@ -27,13 +27,13 @@ process.on('SIGINT', () => {
     console.log('There was an error stopping the server', e);
   }
   co(function* () {
-    yield WebContext.lcStop();
+    yield BaseContext.lcStop();
   }).then(() => process.exit());
 });
 
 co(function* () {
   console.log('Starting context');
-  yield WebContext.lcStart();
+  yield BaseContext.lcStart();
 }).then(
   () => {
     SwaggerExpress.create(config, (err, swaggerExpress) => {

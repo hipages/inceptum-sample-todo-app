@@ -29,7 +29,8 @@ const co = require('co');
 const _ = require('lodash-compat');
 const debug = require('debug')('inceptum:middleware:router');
 const specs = require('swagger-tools').specs;
-const { WebContext } = require('inceptum');
+const { BaseContext } = require('inceptum');
+const Promise = require('bluebird');
 
 // ************************ Helper methods
 
@@ -195,7 +196,7 @@ function* createHandler(req) {
     req.swagger.operation['x-swagger-router-controller'] :
     req.swagger.path['x-swagger-router-controller'];
   try {
-    const controller = yield WebContext.getObjectByName(controllerName);
+    const controller = yield BaseContext.getObjectByName(controllerName);
     return createControllerArgHandler(controller,
       req.swagger.operation.operationId ?
         req.swagger.operation.operationId :
