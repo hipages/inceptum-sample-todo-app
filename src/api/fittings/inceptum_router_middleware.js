@@ -508,7 +508,10 @@ module.exports = function (options) {
     }
     if (!_.isUndefined(handler)) {
       try {
-        const r = handler(req, res);
+        let r = handler(req, res);
+        if (!(r instanceof Promise) && r.then) {
+          r = Promise.resolve(r);
+        }
         if (r instanceof Promise) {
           r.then((res) => {
             if (res instanceof Error) {
@@ -537,7 +540,10 @@ module.exports = function (options) {
 
         if (!_.isUndefined(handler)) {
           try {
-            const r = handler(req, res);
+            let r = handler(req, res);
+            if (!(r instanceof Promise) && r.then) {
+              r = Promise.resolve(r);
+            }
             if (r instanceof Promise) {
               return yield r;
             }
