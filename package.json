@@ -8,8 +8,6 @@
   "license": "",
   "main": "src/app.js",
   "dependencies": {
-    "bluebird": "3.5.0",
-    "continuation-local-storage": "3.2.0",
     "express": "^4.12.3",
     "inceptum": "1.0.0",
     "prom-client": "7.1.0",

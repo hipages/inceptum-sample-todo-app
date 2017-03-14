@@ -26,16 +26,11 @@ process.on('SIGINT', () => {
   } catch (e) {
     console.log('There was an error stopping the server', e);
   }
-  co(function* () {
-    yield BaseContext.lcStop();
-  }).then(() => process.exit());
+  co(BaseContext.lcStop().then(() => process.exit()));
 });
 
-co(function* () {
-  console.log('Starting context');
-  yield BaseContext.lcStart();
-}).then(
-  () => {
+BaseContext.lcStart()
+  .then(() => {
     SwaggerExpress.create(config, (err, swaggerExpress) => {
       if (err) { throw err; }
 

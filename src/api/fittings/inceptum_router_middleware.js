@@ -25,12 +25,11 @@
  *
  */
 
-const co = require('co');
+// const co = require('co');
 const _ = require('lodash-compat');
 const debug = require('debug')('inceptum:middleware:router');
 const specs = require('swagger-tools').specs;
-const { BaseContext } = require('inceptum');
-const Promise = require('bluebird');
+const { BaseContext, PromiseUtil } = require('inceptum');
 
 // ************************ Helper methods
 
@@ -177,8 +176,8 @@ function createControllerArgHandler(controller, operationId) {
     const args = paramFunctions.map((f) => f(req, res));
     const resp = controller[functionName](...args);
     if (resp) {
-      if (resp.next) {
-        return co(resp).then((result) => {
+      if (resp.then) {
+        return resp.then((result) => {
           send(result, res);
         }, (err) => {
           console.log(err);
@@ -191,16 +190,16 @@ function createControllerArgHandler(controller, operationId) {
   };
 }
 
-function* createHandler(req) {
+function createHandler(req) {
   const controllerName = req.swagger.operation['x-swagger-router-controller'] ?
     req.swagger.operation['x-swagger-router-controller'] :
     req.swagger.path['x-swagger-router-controller'];
   try {
-    const controller = yield BaseContext.getObjectByName(controllerName);
-    return createControllerArgHandler(controller,
-      req.swagger.operation.operationId ?
-        req.swagger.operation.operationId :
-        req.method.toLowerCase());
+    return BaseContext.getObjectByName(controllerName)
+      .then((controller) => createControllerArgHandler(controller,
+          req.swagger.operation.operationId ?
+            req.swagger.operation.operationId :
+            req.method.toLowerCase()));
   } catch (e) {
     console.log(e);
     throw e;
@@ -501,70 +500,78 @@ module.exports = function (options) {
       send405(req, res, next);
       return;
     }
-    const handlerName = getHandlerName(req);
-    let handler = handlerCache[handlerName];
-    if (_.isUndefined(handler) && options.useStubs === true) {
-      handler = handlerCache[handlerName] = createStubHandler(handlerName);
-    }
-    if (!_.isUndefined(handler)) {
-      try {
-        let r = handler(req, res);
-        if (!(r instanceof Promise) && r.then) {
-          r = Promise.resolve(r);
-        }
-        if (r instanceof Promise) {
-          r.then((res) => {
-            if (res instanceof Error) {
-              console.log(res);
-              next(res);
-            } else {
-              next(null, res);
-            }
-          })
-            .catch(next);
+    PromiseUtil.try(() => {
+      const handlerName = getHandlerName(req);
+      let handler = handlerCache[handlerName];
+      if (_.isUndefined(handler) && options.useStubs === true) {
+        handler = handlerCache[handlerName] = createStubHandler(handlerName);
+      }
+      if (_.isUndefined(handler)) {
+        return createHandler(req)
+          .then((handler) => {
+            handlerCache[handlerName] = handler;
+            return handler;
+          });
+      }
+      return handler;
+    })
+      .then((handler) => {
+        try {
+          const r = handler(req, res);
+          if (r instanceof Promise) {
+            r.then((res) => {
+              if (res instanceof Error) {
+                console.log(res);
+                next(res);
+              } else {
+                next(null, res);
+              }
+            })
+              .catch(next);
+            return;
+          }
+          next(null, r);
+          return;
+        } catch (err) {
+          debug('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
+          debugError(err, debug);
+          next(err);
           return;
         }
-        next(null, r);
-        return;
-      } catch (err) {
-        debug('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
-        debugError(err, debug);
-        next(err);
-        return;
-      }
-    } else {
-      // The handler is not defined, and it's not a stub
-      co(function* () {
-        let rErr;
-        handler = handlerCache[handlerName] = yield createHandler(req);
-
-        if (!_.isUndefined(handler)) {
-          try {
-            let r = handler(req, res);
-            if (!(r instanceof Promise) && r.then) {
-              r = Promise.resolve(r);
-            }
-            if (r instanceof Promise) {
-              return yield r;
-            }
-            return r;
-          } catch (err) {
-            rErr = err;
-            debug('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
-            console.log(err);
-          }
-        } else if (options.ignoreMissingHandlers !== true) {
-          rErr = new Error(`Cannot resolve the configured swagger-router handler: ${handlerName}`);
-
-          res.statusCode = 500;
-        }
-
-        if (rErr) {
-          debugError(rErr, debug);
-        }
-
-        return rErr;
-      }).then((r) => ((r instanceof Error) ? next(r) : next(null, r))).catch(next);
-    }
+      });
+    // } else {
+    //   // The handler is not defined, and it's not a stub
+    //   co(function* () {
+    //     let rErr;
+    //     handler = handlerCache[handlerName] = yield createHandler(req);
+    //
+    //     if (!_.isUndefined(handler)) {
+    //       try {
+    //         let r = handler(req, res);
+    //         if (!(r instanceof Promise) && r.then) {
+    //           r = Promise.resolve(r);
+    //         }
+    //         if (r instanceof Promise) {
+    //           return yield r;
+    //         }
+    //         return r;
+    //       } catch (err) {
+    //         rErr = err;
+    //         debug('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
+    //         console.log(err);
+    //       }
+    //     } else if (options.ignoreMissingHandlers !== true) {
+    //       rErr = new Error(`Cannot resolve the configured swagger-router handler: ${handlerName}`);
+    //
+    //       res.statusCode = 500;
+    //     }
+    //
+    //     if (rErr) {
+    //       debugError(rErr, debug);
+    //     }
+    //
+    //     return rErr;
+    //   }).then((r) => ((r instanceof Error) ? next(r) : next(null, r))).catch(next);
+    // }
   };
 };

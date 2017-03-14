@@ -1,6 +1,6 @@
 
 class SayHiController {
-  * sayHi() {
+  sayHi() {
     return { message: this.salute };
   }
 }

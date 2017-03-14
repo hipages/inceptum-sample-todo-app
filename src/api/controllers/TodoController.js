@@ -11,30 +11,32 @@ class TodoController {
    * @param todo
    * @param {ServerResponse} res
    */
-  * createTodo(todo, res) {
-    try {
-      const newTodo = yield this.todoService.create(todo);
-      res.status(201);
-      res.location(`/todo/${newTodo.id}`);
-      res.json('OK');
-    } catch (e) {
-      console.log(e);
-    }
+  createTodo(todo, res) {
+    return this.todoService.create(todo)
+      .then((newTodo) => {
+        res.status(201);
+        res.location(`/todo/${newTodo.id}`);
+        res.json('OK');
+      });
   }
-  * listTodos(page, pageSize) {
-    return yield this.todoService.listTodos(page, pageSize);
+  listTodos(page, pageSize) {
+    return this.todoService.listTodos(page, pageSize);
   }
-  * get(id) {
-    const todo = yield this.todoService.getTodo(id);
-    if (!todo) {
-      throw HttpError.notFound(`Couldn't find a todo with id: ${id}`);
-    }
-    return todo;
+  get(id) {
+    return this.todoService.getTodo(id)
+      .then((todo) => {
+        if (!todo) {
+          throw HttpError.notFound(`Couldn't find a todo with id: ${id}`);
+        }
+        return todo;
+      });
   }
-  * markCompleted(id, res) {
-    yield this.todoService.markCompleted(id);
-    res.status(204);
-    res.json('OK');
+  markCompleted(id, res) {
+    return this.todoService.markCompleted(id)
+      .then(() => {
+        res.status(204);
+        res.json('OK');
+      });
   }
 }
 

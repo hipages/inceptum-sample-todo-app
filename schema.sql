@@ -1,5 +1,7 @@
 CREATE DATABASE todo;
 
-CREATE TABLE todo.table1 (`id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(20) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
-
-INSERT INTO todo.table1 (name) VALUES ("User 1"),("User 2"),("User 3");
+CREATE TABLE todo.todo (
+  `id` varchar(36) NOT NULL PRIMARY KEY,
+  `description` varchar(200) NOT NULL,
+  `completed` BOOLEAN NOT NULL DEFAULT FALSE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;

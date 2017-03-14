@@ -71,6 +71,9 @@ Logging:
       streams:
         console: debug
 #        myredis: info
+    - name: mysql/
+      streams:
+        console: debug
 
 application:
   salutation: Hello, man!
