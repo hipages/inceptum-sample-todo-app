@@ -67,12 +67,6 @@ class TodoService {
   }
 }
 
-TodoService.transactional = {
-  create: 'readwrite',
-  markCompleted: 'readwrite',
-  default: 'readonly'
-};
-
 TodoService.autowire = {
   mysqlClient: 'mainMySQLClient'
 };
