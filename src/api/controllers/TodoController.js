@@ -15,10 +15,8 @@ class TodoController {
     try {
       const newTodo = yield this.todoService.create(todo);
       res.status(201);
-      // res.contentType('application/json');
       res.location(`/todo/${newTodo.id}`);
       res.json('OK');
-      // res.writeHeader(201, undefined, undefined);
     } catch (e) {
       console.log(e);
     }
