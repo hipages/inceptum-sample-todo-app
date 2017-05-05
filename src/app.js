@@ -1,48 +1,14 @@
-const SwaggerExpress = require('swagger-express-mw');
-const app = require('express')();
-const { BaseContext, LogManager } = require('inceptum');
-const co = require('co');
+const { InceptumSwaggerApp } = require('inceptum');
 const path = require('path');
 
-LogManager.setAppName('swagger-example');
-const log = LogManager.getLogger(__filename);
+const swaggerFilePath = path.resolve(`${__dirname}/../config/swagger.yaml`);
 
-log.info({ content: 'fine' }, 'This is a message');
-log.debug({ content: 'wrong' }, 'This is a debug message');
+const inceptum = new InceptumSwaggerApp(swaggerFilePath);
+const context = inceptum.getContext();
 
-const config = {
-  appRoot: __dirname, // required config
-};
+context.registerSingletonsInDir(path.resolve(`${__dirname}/controllers`));
+context.registerSingletonsInDir(path.resolve(`${__dirname}/service`));
 
-BaseContext.registerSingletonsInDir(path.join(config.appRoot, 'api/controllers/'));
-BaseContext.registerSingletonsInDir(path.join(config.appRoot, 'service/'));
+inceptum.start();
 
-let server = null;
-
-process.on('SIGINT', () => {
-  console.log('Shutting down app');
-  try {
-    server.close();
-  } catch (e) {
-    console.log('There was an error stopping the server', e);
-  }
-  co(BaseContext.lcStop().then(() => process.exit()));
-});
-
-BaseContext.lcStart()
-  .then(() => {
-    SwaggerExpress.create(config, (err, swaggerExpress) => {
-      if (err) { throw err; }
-
-      // install middleware
-      swaggerExpress.register(app);
-
-      const port = process.env.PORT || 10010;
-      server = app.listen(port);
-
-      console.log(`try this:\ncurl http://127.0.0.1:${port}/swagger`);
-    });
-  }
-);
-
-module.exports = app; // for testing
+module.exports = inceptum; // for testing

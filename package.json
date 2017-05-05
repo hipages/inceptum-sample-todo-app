@@ -10,6 +10,7 @@
   "dependencies": {
     "express": "^4.12.3",
     "inceptum": "1.0.0",
+    "json-stringify-safe": "5.0.1",
     "prom-client": "7.1.0",
     "swagger-express-mw": "^0.1.0",
     "uuid": "3.0.1"

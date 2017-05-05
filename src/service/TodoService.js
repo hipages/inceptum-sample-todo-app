@@ -3,7 +3,7 @@ const uuid = require('uuid');
 class TodoService {
   create(todo) {
     const newTodo = {
-      id: uuid.v4(),
+      id: todo.id || uuid.v4(),
       description: todo.description,
       completed: false
     };

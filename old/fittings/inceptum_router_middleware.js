@@ -129,7 +129,6 @@ function send(resp, res) {
 // ************************ End of Helper methods
 
 const defaultOptions = {
-  controllers: {},
   useStubs: false // Should we set this automatically based on process.env.NODE_ENV?
 };
 
@@ -470,7 +469,6 @@ const send405 = function (req, res, next) {
  * the swagger-validator middleware, you must use it prior to using this middleware.
  *
  * @param {object} [options] - The middleware options
- * @param {boolean} [options.useStubs=false] - Whether or not to stub missing controllers and methods
  *
  * @returns the middleware function
  */
@@ -539,39 +537,5 @@ module.exports = function (options) {
           return;
         }
       });
-    // } else {
-    //   // The handler is not defined, and it's not a stub
-    //   co(function* () {
-    //     let rErr;
-    //     handler = handlerCache[handlerName] = yield createHandler(req);
-    //
-    //     if (!_.isUndefined(handler)) {
-    //       try {
-    //         let r = handler(req, res);
-    //         if (!(r instanceof Promise) && r.then) {
-    //           r = Promise.resolve(r);
-    //         }
-    //         if (r instanceof Promise) {
-    //           return yield r;
-    //         }
-    //         return r;
-    //       } catch (err) {
-    //         rErr = err;
-    //         debug('Handler threw an unexpected error: %s\n%s', err.message, err.stack);
-    //         console.log(err);
-    //       }
-    //     } else if (options.ignoreMissingHandlers !== true) {
-    //       rErr = new Error(`Cannot resolve the configured swagger-router handler: ${handlerName}`);
-    //
-    //       res.statusCode = 500;
-    //     }
-    //
-    //     if (rErr) {
-    //       debugError(rErr, debug);
-    //     }
-    //
-    //     return rErr;
-    //   }).then((r) => ((r instanceof Error) ? next(r) : next(null, r))).catch(next);
-    // }
   };
 };
