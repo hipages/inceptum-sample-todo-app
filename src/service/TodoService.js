@@ -1,6 +1,13 @@
 const uuid = require('uuid');
 
 class TodoService {
+  /**
+   * Creates a todo in the DB.
+   * @param {Object} todo The todo to create in the database
+   * @param {string} todo.description The description of the todo
+   * @param {string} [todo.id] The id to use for the Todo. if not provided one will be generated.
+   * @returns {Promise.<{id: string, description: string, completed: boolean}>} A promise that will complete with the stored Todo
+   */
   create(todo) {
     const newTodo = {
       id: todo.id || uuid.v4(),
@@ -33,6 +40,12 @@ class TodoService {
   getTodos(transactionalClient, start, size) {
     return transactionalClient.query('SELECT id,description,completed FROM todo LIMIT ?,?', start, size);
   }
+
+  /**
+   * @private
+   * @param {Object} row A row returned by a query to get the jobs
+   * @returns {{id: string, description: string, completed: boolean}}
+   */
   rowToModel(row) {
     return {
       id: row.id,

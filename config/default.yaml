@@ -41,11 +41,11 @@ logging:
         mainLogFile: error
     - name: ioc/
       streams:
-        console: debug
+        console: info
 #        myredis: info
     - name: mysql/
       streams:
-        console: debug
+        console: info
 
 application:
   salutation: Hello, man!

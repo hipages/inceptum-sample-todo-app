@@ -20,11 +20,11 @@ produces:
 paths:
   /todo:
     # binds a127 app logic to a route
-    x-swagger-router-controller: TodoController
+    x-inceptum-controller: TodoController
     post:
       description: Create a new TODO
       # used as the method name of the controller
-      operationId: createTodo(todo)
+      x-inceptum-operation: createTodo(todo)
       parameters:
         - name: todo
           in: body
@@ -48,7 +48,7 @@ paths:
     get:
       description: Get's a list of todos
       # used as the method name of the controller
-      operationId: listTodos(page, pageSize)
+      x-inceptum-operation: listTodos(page, pageSize)
       parameters:
         - $ref: "#/parameters/page"
         - $ref: "#/parameters/pageSize"
@@ -64,11 +64,11 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /todo/{id}:
     # binds a127 app logic to a route
-    x-swagger-router-controller: TodoController
+    x-inceptum-controller: TodoController
     get:
       description: Gets one todo by id
       # used as the method name of the controller
-      operationId: get(id)
+      x-inceptum-operation: get(id)
       parameters:
         - $ref: "#/parameters/todoId"
       responses:
@@ -86,12 +86,12 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /todo/{id}/complete:
     # binds a127 app logic to a route
-    x-swagger-router-controller: TodoController
+    x-inceptum-controller: TodoController
     post:
       description: Marks a todo as completed
       consumes: ['application/json', 'application/octet-stream']
       # used as the method name of the controller
-      operationId: markCompleted(id)
+      x-inceptum-operation: markCompleted(id)
       parameters:
         - $ref: "#/parameters/todoId"
       responses:
@@ -149,14 +149,9 @@ definitions:
   BasicTodo:
     type: object
     required:
-      - id
       - title
       - description
     properties:
-      id:
-        type: string
-        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        description: The identifier of the ToDo
       title:
         type: string
         description: The title of the Todo
@@ -168,8 +163,13 @@ definitions:
       - $ref: "#/definitions/BasicTodo"
       - type: object
         required:
+          - id
           - status
         properties:
+          id:
+            type: string
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+            description: The identifier of the ToDo
           status:
             type: string
             description: The status of this Todo
