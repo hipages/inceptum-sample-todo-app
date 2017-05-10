@@ -1,5 +1,5 @@
 
-const { HttpError } = require('inceptum');
+const HttpError = require('inceptum-swagger').util.HttpError;
 
 class TodoController {
   constructor() {

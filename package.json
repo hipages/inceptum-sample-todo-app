@@ -1,14 +1,14 @@
 {
-  "name": "swagger-test",
+  "name": "inceptum-sample-todo-app",
   "version": "0.0.1",
   "private": true,
-  "description": "New Swagger API Project",
+  "description": "A sample inceptum application that uses inceptum-swagger",
   "keywords": [],
   "author": "",
   "license": "",
   "main": "src/app.js",
   "dependencies": {
-    "inceptum": "0.1.0",
+    "inceptum-swagger": "0.1.0",
     "uuid": "3.0.1"
   },
   "devDependencies": {

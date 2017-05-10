@@ -1,4 +1,4 @@
-const { InceptumSwaggerApp } = require('inceptum');
+const InceptumSwaggerApp = require('inceptum-swagger').app.InceptumSwaggerApp;
 const path = require('path');
 
 const swaggerFilePath = path.resolve(`${__dirname}/../config/swagger.yaml`);
