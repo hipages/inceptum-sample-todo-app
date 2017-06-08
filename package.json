@@ -8,7 +8,8 @@
   "license": "",
   "main": "src/app.js",
   "dependencies": {
-    "inceptum-swagger": "0.1.0",
+    "inceptum-web": "^0.4.1",
+    "inceptum-swagger": "^0.4.1",
     "uuid": "3.0.1"
   },
   "devDependencies": {
